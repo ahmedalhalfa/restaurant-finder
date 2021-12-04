@@ -2,7 +2,9 @@ const db = require("../db/index");
 
 exports.allRestaurants = async (req, res, next) => {
   try {
-    const { rows } = await db.query("SELECT * FROM restaurants");
+    const { rows } = await db.query(
+      "select * from restaurants left join (select restaurant_id, count(*), trunc(avg(rating), 1) AS avg_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id; "
+    );
     res.status(200).json({
       data: {
         results: rows.length,
@@ -17,12 +19,18 @@ exports.allRestaurants = async (req, res, next) => {
 exports.singleRestaurant = async (req, res, next) => {
   try {
     id = req.params.restaurantId;
-    const { rows } = await db.query("SELECT * FROM restaurants WHERE id=$1", [
-      id,
-    ]);
+    const restaurant = await db.query(
+      "select * from restaurants left join (select restaurant_id, count(*), trunc(avg(rating), 1) AS avg_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id where restaurants.id=$1;",
+      [id]
+    );
+    const reviews = await db.query(
+      "select * from reviews where restaurant_id=$1",
+      [id]
+    );
     res.status(200).json({
       data: {
-        restaurant: rows[0],
+        restaurant: restaurant.rows[0],
+        reviews: reviews.rows,
       },
     });
   } catch (err) {

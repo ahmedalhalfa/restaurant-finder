@@ -2,20 +2,20 @@ const express = require("express");
 const router = express.Router();
 const restaurantsControllers = require("../controllers/restaurantsControllers");
 
-router.get("/restaurants/", restaurantsControllers.allRestaurants);
+router.get("/", restaurantsControllers.allRestaurants);
 
 router.get(
-  "/restaurants/:restaurantId",
+  "/:restaurantId",
   restaurantsControllers.singleRestaurant
 );
 
-router.post("/restaurants", restaurantsControllers.addRestaurant);
+router.post("/", restaurantsControllers.addRestaurant);
 
 router.put(
-  "/restaurants/:restaurantId",
+  "/:restaurantId",
   restaurantsControllers.updateRestaurant
 );
 
-router.delete("/restaurants/:restaurantId", restaurantsControllers.deleteRestaurant);
+router.delete("/:restaurantId", restaurantsControllers.deleteRestaurant);
 
 module.exports = router;
